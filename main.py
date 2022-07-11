@@ -27,6 +27,9 @@ async def download_youtube_video(url, message,bot):
 	with open(f"{message.chat.id}/{message.chat.id}_{yt.title}", 'rb') as video:
 		await bot.send_video(message.chat.id, video, caption="*Your video*", parse_mode="Markdown")
 		os.remove(f"{message.chat.id}/{message.chat.id}_{yt.title}")
+	print("id: ", message.from_user.id, 
+	      "\nName: ", message.from_user.full_name, 
+	      "\nmessage: ", message.text)
 
 if __name__ == '__main__':
 	executor.start_polling(dp, skip_updates=True)
