@@ -15,55 +15,6 @@ dp = Dispatcher(bot)
 
 
 
-
-@dp.message_handler(commands=['download'])
-async def download(message: types.Message):
-	chat_id = message.chat.id
-	await bot.send_message(chat_id, "Пришліть посилання для встановлення")
-@dp.message_handler()
-async def text_message(message:types.Message):
-	chat_id = message.chat.id
-	url = message.text
-	yt = YouTube(url)
-	if message.text.startswith == 'https://youtu.be/' or 'https://www.youtube.com/':
-		await bot.send_message(chat_id, f"*Починаю скачування відео*: *{yt.title}*\n"
-										f"*Channel*: [{yt.author}]({yt.channel_url})", parse_mode="Markdown")
-		await download_youtube_video(url, message,bot)
-
-async def download_youtube_video(url, message,bot):
-	yt = YouTube(url)
-	stream = yt.streams.filter(progressive=True, file_extension="mp4", res="720p")
-	stream.get_highest_resolution().download(f'{message.chat.id}', f'{message.chat.id}_{yt.title}')
-	with open(f"{message.chat.id}/{message.chat.id}_{yt.title}", 'rb') as video:
-		await bot.send_video(message.chat.id, video, caption=f"*{yt.title}*", parse_mode="Markdown")
-		os.remove(f"{message.chat.id}/{message.chat.id}_{yt.title}")
-
-
-@dp.message_handler(commands=['mp3'])
-async def mp3(message: types.Message):
-	chat_id = message.chat.id
-	await bot.send_message(chat_id, "Пришліть посилання з для встановлення mp3")
-@dp.message_handler()
-async def text_message(message:types.Message):
-	chat_id = message.chat.id
-	url = message.text
-	yt = YouTube(url)
-	if message.text.startswith == 'https://youtu.be/' or 'https://www.youtube.com/':
-		await bot.send_message(chat_id, f"*Починаю скачування відео та конвертування в mp3*: *{yt.title}*\n"
-										f"*Channel*: [{yt.author}]({yt.channel_url})", parse_mode="Markdown")
-		await download_youtube_video(url, message,bot)
-
-async def download_youtube_video(url, message,bot):
-	yt = YouTube(url)
-	# потрібно вказати only_audio=True замість progressive=True, file_extension="mp4"
-	stream = yt.streams.filter(only_audio=True).first()
-	stream.download(f'{message.chat.id}', f'{message.chat.id}_{yt.title}')
-	with open(f"{message.chat.id}/{message.chat.id}_{yt.title}", 'rb') as mp3:
-		# так ож прописати відправку аудіо
-		await bot.send_audio(message.chat.id, mp3, caption="*Your mp3*", parse_mode="Markdown")
-		os.remove(f"{message.chat.id}/{message.chat.id}_{yt.title}")
-
-
 kb1 = InlineKeyboardButton(text='Українській', callback_data='uk')
 kb2 = InlineKeyboardButton(text='Русский'    , callback_data='ru')
 kb3 = InlineKeyboardButton(text='English'    , callback_data='en')
@@ -123,6 +74,56 @@ async def mesen(message: types.Message):
 	t.save(f"{message.text}.mp3")
 	await bot.send_audio(message.chat.id, open(f'{message.text}.mp3', 'rb'))
 	os.remove(f"{message.text}.mp3")
+	
+@dp.message_handler(commands=['download'])
+async def download(message: types.Message):
+	chat_id = message.chat.id
+	await bot.send_message(chat_id, "Пришліть посилання для встановлення")
+@dp.message_handler()
+async def text_message(message:types.Message):
+	chat_id = message.chat.id
+	url = message.text
+	yt = YouTube(url)
+	if message.text.startswith == 'https://youtu.be/' or 'https://www.youtube.com/':
+		await bot.send_message(chat_id, f"*Починаю скачування відео*: *{yt.title}*\n"
+										f"*Channel*: [{yt.author}]({yt.channel_url})", parse_mode="Markdown")
+		await download_youtube_video(url, message,bot)
+
+async def download_youtube_video(url, message,bot):
+	yt = YouTube(url)
+	stream = yt.streams.filter(progressive=True, file_extension="mp4", res="720p")
+	stream.get_highest_resolution().download(f'{message.chat.id}', f'{message.chat.id}_{yt.title}')
+	with open(f"{message.chat.id}/{message.chat.id}_{yt.title}", 'rb') as video:
+		await bot.send_video(message.chat.id, video, caption=f"*{yt.title}*", parse_mode="Markdown")
+		os.remove(f"{message.chat.id}/{message.chat.id}_{yt.title}")
+
+
+@dp.message_handler(commands=['mp3'])
+async def mp3(message: types.Message):
+	chat_id = message.chat.id
+	await bot.send_message(chat_id, "Пришліть посилання з для встановлення mp3")
+@dp.message_handler()
+async def text_message(message:types.Message):
+	chat_id = message.chat.id
+	url = message.text
+	yt = YouTube(url)
+	if message.text.startswith == 'https://youtu.be/' or 'https://www.youtube.com/':
+		await bot.send_message(chat_id, f"*Починаю скачування відео та конвертування в mp3*: *{yt.title}*\n"
+										f"*Channel*: [{yt.author}]({yt.channel_url})", parse_mode="Markdown")
+		await download_youtube_video(url, message,bot)
+
+async def download_youtube_video(url, message,bot):
+	yt = YouTube(url)
+	# потрібно вказати only_audio=True замість progressive=True, file_extension="mp4"
+	stream = yt.streams.filter(only_audio=True).first()
+	stream.download(f'{message.chat.id}', f'{message.chat.id}_{yt.title}')
+	with open(f"{message.chat.id}/{message.chat.id}_{yt.title}", 'rb') as mp3:
+		# так ож прописати відправку аудіо
+		await bot.send_audio(message.chat.id, mp3, caption="*Your mp3*", parse_mode="Markdown")
+		os.remove(f"{message.chat.id}/{message.chat.id}_{yt.title}")
+
+
+
 
 
 
