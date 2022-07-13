@@ -8,11 +8,8 @@ from gtts import gTTS
 from aiogram import *
 import os
 print('bot started')
-admins = [1833097824] 
 
 API_TOKEN = '5113551442:AAHE7YHc1dNr5K2bVUaeq9pp0JOrf3eoQLk'
-# API_TOKEN = '5324328907:AAHFTr15nAQMwAJP9dWpjz5LkDWJNYEro3Q'
-
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot)
 
@@ -32,14 +29,27 @@ async def text_message(message:types.Message):
 		await bot.send_message(chat_id, f"*Починаю скачування відео* та конвертую в mp3: *{yt.title}*\n"
 										f"*Channel*: [{yt.author}]({yt.channel_url})", parse_mode="Markdown")
 		await download_youtube_video(url, message,bot)
-
 async def download_youtube_video(url, message,bot):
-	yt = YouTube(url)
-	stream = yt.streams.filter(progressive=True, file_extension="mp4")
-	stream.get_highest_resolution().download(f'{message.chat.id}', f'{message.chat.id}_{yt.title}')
-	with open(f"{message.chat.id}/{message.chat.id}_{yt.title}", 'rb') as video:
-		await bot.send_video(message.chat.id, video, caption=f"{yt.title}", parse_mode="Markdown")
+	try:
+		yt = YouTube(url)
+		stream = yt.streams.filter(progressive=True, file_extension="mp4")
+		stream.get_highest_resolution().download(f'{message.chat.id}', f'{message.chat.id}_{yt.title}')
+		with open(f"{message.chat.id}/{message.chat.id}_{yt.title}", 'rb') as video:
+			await bot.send_video(message.chat.id, video, caption=f"{yt.title}", parse_mode="Markdown")
+			os.remove(f"{message.chat.id}/{message.chat.id}_{yt.title}")
+	except Exception as net:
+		print(Exception)
+		print(net)
+		message_text = f'''<i>"Дуже велике відео для встановлення" </i>\n {net}'''
+		await bot.send_message(message.chat.id, message_text, parse_mode="HTML")
+		await message.reply("Натомість конвертую в mp3")
+		stream = yt.streams.filter(only_audio=True).first()
+		stream.download(f'{message.chat.id}', f'{message.chat.id}_{yt.title}')
+	with open(f"{message.chat.id}/{message.chat.id}_{yt.title}", 'rb') as mp3:
+		# так ож прописати відправку аудіо
+		await bot.send_audio(message.chat.id, mp3, caption=f"{yt.title}", parse_mode="Markdown")
 		os.remove(f"{message.chat.id}/{message.chat.id}_{yt.title}")
+
 
 
 # @dp.message_handler(commands=['mp3'])
@@ -128,9 +138,15 @@ async def download_youtube_video(url, message,bot):
 # 	os.remove(f"{message.text}.mp3")
 
 
-
+CHAT_ID=1833097824
+async def main():
+    bot = Bot(TOKEN)
+    await bot.send_message(CHAT_ID, "I'm started")
+    await bot.session.close()  # replace with `await bot.close()` on 2.x
+    # await asyncio.sleep(0.1)
 # print("id: ", message.from_user.id, 
 	# 	  "\nName: ", message.from_user.full_name, 
 	# 	  "\nmessage: ", message.text)
 if __name__ == '__main__':
 	executor.start_polling(dp, skip_updates=True)
+	asyncio.run(main())
