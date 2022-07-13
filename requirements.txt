@@ -2,3 +2,4 @@ aiogram
 pytube
 moviepy
 gTTS
+asyncio
